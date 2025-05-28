@@ -10,7 +10,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   const userId = req.params.id;
 
-  const user = await db.query('SELECT * FROM users WHERE id = $1', [userId]);
+  const user = await db.query('SELECT * FROM users WHERE userid = $1', [userId]);
 
   res.json({
     user: user.rows[0],
