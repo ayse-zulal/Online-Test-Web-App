@@ -8,7 +8,6 @@ const verifyToken = require("../middleware/auth");
 const router = express.Router();
 
 router.post('/register', async (req, res) => {
-  console.log('Received registration request:', req.body);
   const { username, email, password } = req.body;
 
   try {
