@@ -3,21 +3,22 @@ import axios from 'axios';
 import { useUserStore } from '../stores/UserStore.ts'; 
 export default function UserPage() {
   const { user, isLoading, fetchUser } = useUserStore();
-  console.log('User:', user);
+  const [testImage, setTestImage] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [questions, setQuestions] = useState([
-    { questionText: '', questionType: 'multiple-choice', options: ['', '', '', ''], correctAnswer: '', image: '' }
+    { questionText: '', questionType: 'open-ended', options: ['', '', '', ''], correctAnswer: '', image: '' }
   ]);
   useEffect(() => {
     if (!user) {
       fetchUser();
     }
   }, [user, fetchUser]);
+
   const handleImageUpload = async (file, qIndex) => {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('upload_preset', 'test-preset'); // Cloudinary preset
+    formData.append('upload_preset', 'test-preset'); 
     try {
       const res = await axios.post('https://api.cloudinary.com/v1_1/dvv4yznic/image/upload', formData);
       const imageUrl = res.data.secure_url;
@@ -29,35 +30,58 @@ export default function UserPage() {
     }
   };
 
+  const handleTestImageUpload = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'test-preset'); 
+    try {
+      const res = await axios.post('https://api.cloudinary.com/v1_1/dvv4yznic/image/upload', formData);
+      setTestImage(res.data.secure_url);
+    } catch (err) {
+      console.error('Test görseli yüklenemedi:', err);
+    }
+  };
+
+
   const handleCreateTest = async () => {
     try {
       await axios.post('http://localhost:5000/api/tests/create', {
         title,
         description,
-        userId: user.userId,
+        userId: user.user.userid,
+        image: testImage,
         questions,
       });
       alert('Test oluşturuldu!');
       setTitle('');
       setDescription('');
-      setQuestions([{ questionText: '', questionType: 'multiple', options: ['', '', '', ''], correctAnswer: '', image: '' }]);
+      setTestImage('');
+      setQuestions([{ questionText: '', questionType: 'open-ended', options: ['', '', '', ''], correctAnswer: '', image: '' }]);
     } catch (err) {
       console.error(err);
       alert('Test oluşturulamadı.');
     }
   };
+  const handleImageRemove = (index) => {
+  setQuestions(prev => {
+    const newQuestions = [...prev];
+    newQuestions[index].image = null; 
+    return newQuestions;
+  });
+};
+
 
   return (
     <div
   style={{
-    padding: '40px 20px',
-    maxWidth: 900,
+    padding: '30px 10px',
+    maxWidth: 500,
     margin: 'auto',
-    fontFamily: 'Arial, sans-serif',
+    fontFamily: 'Georgia, serif',
     color: '#333'
   }}
 >
-  <h2 style={{ marginBottom: 20, fontSize: 28, textAlign: 'center' }}>📝 Yeni Test Oluştur</h2>
+  <h2 style={{ marginBottom: 20, fontSize: 28, textAlign: 'center' }}>Yeni Test Oluştur</h2>
 
   <div style={{ marginBottom: 20 }}>
     <label style={{ display: 'block', fontWeight: 'bold', marginBottom: 5 }}>Test Başlığı</label>
@@ -66,7 +90,7 @@ export default function UserPage() {
       value={title}
       onChange={e => setTitle(e.target.value)}
       style={{
-        width: '100%',
+        width: '90%',
         padding: 10,
         borderRadius: 8,
         border: '1px solid #ccc',
@@ -81,7 +105,7 @@ export default function UserPage() {
       value={description}
       onChange={e => setDescription(e.target.value)}
       style={{
-        width: '100%',
+        width: '90%',
         padding: 10,
         borderRadius: 8,
         border: '1px solid #ccc',
@@ -91,12 +115,39 @@ export default function UserPage() {
     />
   </div>
 
+  <div style={{ marginBottom: 30 }}>
+  <label style={{ display: 'block', fontWeight: 'bold', marginBottom: 5 }}>Test Görseli</label>
+  <label htmlFor="test-image-upload" style={{
+    display: 'inline-block',
+    padding: '6px 12px',
+    backgroundColor: '#e27373',
+    color: 'white',
+    borderRadius: 4,
+    cursor: 'pointer',
+    fontWeight: 'bold'
+  }}>
+    Dosya Seç
+  </label>
+  <input
+    id="test-image-upload"
+    type="file"
+    onChange={(e) => handleTestImageUpload(e.target.files[0])}
+    style={{ display: 'none' }}
+  />
+  {testImage && (
+    <div style={{ marginTop: 10 }}>
+      <img src={testImage} alt="Test görseli" style={{ maxWidth: '100%', borderRadius: 8 }} />
+    </div>
+  )}
+</div>
+
   {questions.map((q, index) => (
   <div
     key={index}
     style={{
       marginBottom: 30,
       padding: 20,
+      width: "85%",
       borderRadius: 12,
       border: '1px solid #ddd',
       backgroundColor: '#fafafa',
@@ -116,7 +167,7 @@ export default function UserPage() {
         right: 10,
         border: 'none',
         backgroundColor: 'transparent',
-        color: 'red',
+        color: '#e27373',
         fontWeight: 'bold',
         fontSize: 18,
         cursor: 'pointer',
@@ -126,7 +177,7 @@ export default function UserPage() {
     </button>
 
     <h4 style={{ marginBottom: 15 }}>
-      🧠 Soru {index + 1} ({q.questionType === 'multiple_choice' ? 'Çoktan Seçmeli' : 'Açık Uçlu'})
+      Soru {index + 1} ({q.questionType === 'multiple-choice' ? 'Çoktan Seçmeli' : 'Açık Uçlu'})
     </h4>
 
     <label style={{ display: 'block', fontWeight: 'bold', marginBottom: 5 }}>Soru Metni</label>
@@ -146,7 +197,7 @@ export default function UserPage() {
       }}
     />
 
-    {q.questionType === 'multiple_choice' && (
+    {q.questionType === 'multiple-choice' && (
       <>
         <label style={{ display: 'block', fontWeight: 'bold', marginBottom: 5 }}>Seçenekler</label>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 15 }}>
@@ -191,11 +242,45 @@ export default function UserPage() {
     />
 
     <label style={{ display: 'block', fontWeight: 'bold', marginBottom: 5 }}>Görsel</label>
+    <div>
+    <label htmlFor={`file-upload-${index}`} style={{
+      display: 'inline-block',
+      padding: '6px 12px',
+      backgroundColor: '#e27373',
+      color: 'white',
+      borderRadius: 4,
+      cursor: 'pointer',
+      fontWeight: 'bold'
+    }}>
+      Dosya Seç
+    </label>
     <input
+      id={`file-upload-${index}`}
       type="file"
       onChange={e => handleImageUpload(e.target.files[0], index)}
-      style={{ marginBottom: 10 }}
+      style={{ display: 'none' }} 
     />
+    <button
+      onClick={() => handleImageRemove(index)}
+      style={{
+        top: 5,
+        right: 5,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        color: 'white',
+        border: 'none',
+        borderRadius: '50%',
+        marginLeft: "5px",
+        width: 24,
+        height: 24,
+        cursor: 'pointer',
+        fontWeight: 'bold',
+        lineHeight: '20px',
+      }}
+      title="Görseli Sil"
+    >
+      ×
+    </button>
+  </div>
     {q.image && (
       <img
         src={q.image}
@@ -209,7 +294,7 @@ export default function UserPage() {
 
   <div style={{ textAlign: 'center', marginTop: 20 }}>
     <div style={{ textAlign: 'center', marginTop: 20 }}>
-  <p style={{ fontWeight: 'bold', marginBottom: 10 }}>➕ Soru Tipi Seçin:</p>
+  <p style={{ fontWeight: 'bold', marginBottom: 10 }}>Eklenecek Soru Tipi Seçin:</p>
   <button
     onClick={() =>
       setQuestions([
@@ -229,10 +314,10 @@ export default function UserPage() {
       borderRadius: 6,
       border: '1px solid #ccc',
       cursor: 'pointer',
-      backgroundColor: '#f8f8f8',
+      backgroundColor: '#f4b6b6',
     }}
   >
-    ✅ Çoktan Seçmeli Soru
+    Çoktan Seçmeli Soru
   </button>
   <button
     onClick={() =>
@@ -250,19 +335,20 @@ export default function UserPage() {
     style={{
       padding: '8px 12px',
       borderRadius: 6,
+      marginTop: "5px",
       border: '1px solid #ccc',
       cursor: 'pointer',
-      backgroundColor: '#f8f8f8',
+      backgroundColor: '#f4b6b6',
     }}
   >
-    📝 Açık Uçlu Soru
+    Açık Uçlu Soru
   </button>
 </div>
     <br />
     <button
       onClick={handleCreateTest}
       style={{
-        backgroundColor: '#4CAF50',
+        backgroundColor: '#e27373',
         color: 'white',
         padding: '12px 24px',
         border: 'none',
@@ -271,7 +357,7 @@ export default function UserPage() {
         cursor: 'pointer',
       }}
     >
-      ✅ Testi Oluştur
+      Testi Oluştur
     </button>
   </div>
 </div>

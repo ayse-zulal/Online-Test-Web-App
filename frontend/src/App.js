@@ -4,9 +4,13 @@ import TestPage from './pages/TestPage';
 import UserPage from './pages/UserPage';
 import Register from './pages/RegisterPage';
 import Login from './pages/LoginPage';
+import Header from './components/Header';
+import { useUserStore } from './stores/UserStore.ts';
 function App() {
+  const { user } = useUserStore();
   return (
     <Router>
+      <Header isLoggedIn={!!user} />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/test/:id" element={<TestPage />} />

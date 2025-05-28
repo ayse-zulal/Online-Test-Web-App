@@ -1,0 +1,177 @@
+.blurred-container {
+  filter: blur(5px);
+  pointer-events: none;
+  user-select: none;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 0 30px rgba(0,0,0,0.2);
+  z-index: 1001;
+}
+
+
+
+.leaderboard-container {
+  background: linear-gradient(145deg, #f0f0f3, #e2e2e2);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 3px 3px 6px #ccc, -3px -3px 6px #fff;
+  margin-top: 30px;
+}
+
+.leaderboard-container h3 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.leaderboard-table th,
+.leaderboard-table td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #ccc;
+}
+
+.leaderboard-table tr:nth-child(1) td {
+  font-weight: bold;
+  color: rgb(207, 178, 11);
+}
+.leaderboard-table tr:nth-child(2) td {
+  font-weight: bold;
+  color: rgb(144, 144, 144);
+}
+.leaderboard-table tr:nth-child(3) td {
+  font-weight: bold;
+  color: #ac6e30; 
+}
+
+.input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0 20px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.answer-textarea {
+  width: 90%;
+  min-height: 100px;
+  padding: 12px 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.5;
+  resize: vertical;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.answer-textarea:focus {
+  outline: none;
+  border-color: #e27373;
+  box-shadow: 0 0 0 3px rgba(226, 115, 115, 0.2);
+  background-color: #fff;
+}
+
+.question-card {
+  margin-bottom: 25px;
+}
+
+.question-image {
+  max-width: 100%;
+  margin-bottom: 10px;
+  border-radius: 6px;
+}
+
+.option-label {
+  display: block;
+  margin: 5px 0;
+}
+
+.start-button, .submit-button {
+  padding: 10px 20px;
+  margin-top: 20px;
+  background-color: #e27373;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.start-button:hover, .submit-button:hover {
+  background-color: #f18080;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* yarı saydam arka plan */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.warning-modal {
+  background-color: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  max-width: 400px;
+  width: 80%;
+}
+
+.warning-text {
+  font-size: 18px;
+  font-weight: 500;
+  color: #b91c1c; /* kırmızı tonu */
+  margin-bottom: 16px;
+}
+
+.warning-button {
+  padding: 10px 20px;
+  background-color: #e27373;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.warning-button:hover {
+  background-color: #f18080;
+}
+@media (max-width: 600px) {
+  .leaderboard-table th,
+  .leaderboard-table td {
+    font-size: 12px;
+    padding: 4px 6px;
+  }
+}

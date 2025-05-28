@@ -10,12 +10,14 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   const testId = req.params.id;
 
-  const test = await db.query('SELECT * FROM tests WHERE id = $1', [testId]);
+  const test = await db.query('SELECT * FROM tests WHERE testid = $1', [testId]);
   const questions = await db.query('SELECT * FROM questions WHERE testid = $1', [testId]);
+  const creator = await db.query('SELECT username FROM users WHERE userid = $1', [test.rows[0].creatorid]);
 
   res.json({
     test: test.rows[0],
     questions: questions.rows,
+    creator: creator.rows[0],
   });
 });
 
@@ -28,12 +30,12 @@ router.get('/user/:id', async (req, res) => {
 });
 
 router.post('/create', async (req, res) => {
-  const { title, userId, description, questions } = req.body;
+  const { title, userId, description, image, questions } = req.body;
 
   try {
     const testResult = await db.query(
-      'INSERT INTO tests (title, creatorid, description, createdat) VALUES ($1, $2, $3, NOW()) RETURNING testid',
-      [title, userId, description]
+      'INSERT INTO tests (title, creatorid, description, image,createdat) VALUES ($1, $2, $3, $4, NOW()) RETURNING testid',
+      [title, userId, description, image]
     );
     const testId = testResult.rows[0].testid;
 

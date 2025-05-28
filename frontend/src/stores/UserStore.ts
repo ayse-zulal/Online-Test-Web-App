@@ -30,9 +30,7 @@ export const useUserStore = create<UserStore>((set) => ({
         Authorization: `Bearer ${token}`
       }
     });
-        console.log('fetchUser response:', res.data);
     const userData = await axios.get(`http://localhost:5000/api/users/${res.data.userId}`);
-    console.log('fetchUser response:', userData.data);
     set({ user: userData.data, isLoading: false });
   } catch (err) {
     console.error('fetchUser error:', err);
