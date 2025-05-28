@@ -11,7 +11,7 @@ require('dotenv').config();
 app.use(cookieParser()); 
 
 app.use(cors({
-  origin: "https://online-test-app-134340.netlify.app/", // frontend adresin
+  origin: "https://online-test-app-134340.netlify.app", // frontend adresin
   credentials: true
 }));
 app.use(express.json());
