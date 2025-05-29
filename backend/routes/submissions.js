@@ -4,8 +4,8 @@ const db = require('../db');
 const { v4: uuidv4 } = require('uuid');
 
 router.post('/create', async (req, res) => {
-  const { testId, name, answers } = req.body;
-  console.log('Received submission:', { testId, name, answers });
+  const { testId, submittername, answers } = req.body;
+  console.log('Received submission:', { testId, submittername, answers });
 
   if (!name?.trim() || answers.some(a => !a.answerText?.trim())) {
     return res.status(400).json({ error: 'İsim ve tüm cevaplar doldurulmalıdır.' });
@@ -14,7 +14,7 @@ router.post('/create', async (req, res) => {
   try {
     const submissionRes = await db.query(
       'INSERT INTO submissions (testid, submittedat, submittername) VALUES ($1, NOW(), $2) RETURNING submissionid',
-      [testId, name.trim()]
+      [testId, submittername.trim()]
     );
 
     const submissionId = submissionRes.rows[0].submissionid;
