@@ -7,7 +7,7 @@ router.post('/create', async (req, res) => {
   const { testId, submittername, answers } = req.body;
   console.log('Received submission:', { testId, submittername, answers });
 
-  if (!name?.trim() || answers.some(a => !a.answerText?.trim())) {
+  if (!submittername?.trim() || answers.some(a => !a.answerText?.trim())) {
     return res.status(400).json({ error: 'İsim ve tüm cevaplar doldurulmalıdır.' });
   }
 
