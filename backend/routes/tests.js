@@ -10,23 +10,44 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   const testId = req.params.id;
 
-  const test = await db.query('SELECT * FROM tests WHERE testid = $1', [testId]);
-  const questions = await db.query('SELECT * FROM questions WHERE testid = $1', [testId]);
-  const creator = await db.query('SELECT username FROM users WHERE userid = $1', [test.rows[0].creatorid]);
+  try {
+    const testResult = await db.query('SELECT * FROM tests WHERE testid = $1', [testId]);
+    if (testResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Test bulunamadı' });
+    }
 
-  res.json({
-    test: test.rows[0],
-    questions: questions.rows,
-    creator: creator.rows[0],
-  });
+    const test = testResult.rows[0];
+
+    const questionsResult = await db.query('SELECT * FROM questions WHERE testid = $1', [testId]);
+    const questions = questionsResult.rows;
+
+    let creator = null;
+    if (test.creatorid) {
+      const creatorResult = await db.query('SELECT username FROM users WHERE userid = $1', [test.creatorid]);
+      creator = creatorResult.rows[0] || null;
+    }
+
+    res.json({
+      test,
+      questions,
+      creator,
+    });
+  } catch (err) {
+    console.error('Test detay hatası:', err.message);
+    res.status(500).json({ error: 'Test bilgisi alınırken bir hata oluştu' });
+  }
 });
 
 router.get('/user/:id', async (req, res) => {
   const userId = req.params.id;
 
-  const tests = await db.query('SELECT * FROM tests WHERE creatorid = $1', [userId]);
-
-  res.json(tests.rows);
+  try {
+    const result = await db.query('SELECT * FROM tests WHERE creatorid = $1', [userId]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Kullanıcının testleri alınamadı:', err.message);
+    res.status(500).json({ error: 'Kullanıcının testleri alınırken bir hata oluştu' });
+  }
 });
 
 router.post('/create', async (req, res) => {

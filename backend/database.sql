@@ -8,12 +8,13 @@ CREATE TABLE users (
     createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE tests (
+DROP TABLE IF EXISTS CREATE TABLE tests (
     testid SERIAL PRIMARY KEY,
     title TEXT NOT NULL,
     description TEXT,
     creatorid INTEGER REFERENCES users(userid),
-    createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    image TEXT
 );
 
 CREATE TABLE questions (
