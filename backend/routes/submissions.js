@@ -43,13 +43,15 @@ router.get('/leaderboard/:testid', async (req, res) => {
         s.submissionid,
         s.submittername,
         s.submittedat,
-        COUNT(*) FILTER (WHERE a.answertext = q.correctanswer) AS correct_count
-      FROM submissions s
-      JOIN answers a ON s.submissionid = a.submissionid
-      JOIN questions q ON a.questionid = q.questionid
-      WHERE s.testid = $1
-      GROUP BY s.submissionid, s.submittername, s.submittedat
-      ORDER BY correct_count DESC, s.submittedat ASC
+        COUNT(*) FILTER (
+          WHERE LOWER(TRIM(a.answertext)) = LOWER(TRIM(q.correctanswer))
+        ) AS correct_count
+        FROM submissions s
+        JOIN answers a ON s.submissionid = a.submissionid
+        JOIN questions q ON a.questionid = q.questionid
+        WHERE s.testid = $1
+        GROUP BY s.submissionid, s.submittername, s.submittedat
+        ORDER BY correct_count DESC, s.submittedat ASC
     `, [testid]);
 
     res.json(result.rows);
