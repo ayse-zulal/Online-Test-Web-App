@@ -7,14 +7,23 @@ router.get('/', async (req, res) => {
   res.json(result.rows);
 });
 
-router.get('/:id', async (req, res) => {
-  const answerId = req.params.id;
+router.get('/:submissionid', async (req, res) => {
+  const { submissionid } = req.params;
 
-  const answer = await db.query('SELECT * FROM answers WHERE id = $1', [answerId]);
-
-  res.json({
-    question: question.rows[0],
-  });
+  try {
+    const result = await db.query(
+      `SELECT q.questiontext, a.answertext
+       FROM answers a
+       JOIN questions q ON a.questionid = q.questionid
+       WHERE a.submissionid = $1
+       ORDER BY q.questionid ASC`,
+      [submissionid]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Answers fetch error:', err);
+    res.status(500).json({ error: 'Cevaplar alınamadı' });
+  }
 });
 
 module.exports = router;

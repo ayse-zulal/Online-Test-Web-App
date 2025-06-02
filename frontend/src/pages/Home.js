@@ -50,6 +50,8 @@ if (error) {
           <ul style={{ margin: 0 }}>
             <li style={{marginBottom:5}}>Her teste sadece <strong>bir</strong> kere katılabilirsiniz, hile yok</li>
             <li style={{marginBottom:5}}>Tüm sorular <strong>zorunlu</strong>, boş bırakılamaz, testi tamamladıktan sonra <strong>cevap anahtarını</strong> ve sıralamadaki yerinizi görebilirsiniz</li>
+            <li style={{marginBottom:5}}>Siteyle ilgili şikayetiniz, tavsiyeniz olursa ya da kendi testlerinizi oluşturmak istiyorsanız <strong>@mensisnigrum</strong> ismiyle beni herhangi bir platformda bulabilirsiniz.</li>
+            <li style={{marginBottom:5}}>Mensis iyi şanslar diler~</li>
           </ul>
         </div>
       )}
@@ -115,6 +117,8 @@ if (error) {
             <ul style={{ margin: 0 }}>
             <li style={{marginBottom:5}}>Her teste sadece <strong>bir</strong> kere katılabilirsiniz, hile yok</li>
             <li style={{marginBottom:5}}>Tüm sorular zorunlu, boş bırakılamaz, testi tamamladıktan sonra cevap anahtarını ve sıralamadaki yerinizi görebilirsiniz</li>
+            <li style={{marginBottom:5}}>Siteyle ilgili şikayetiniz, tavsiyeniz olursa ya da kendi testlerinizi oluşturmak istiyorsanız <strong>@mensisnigrum</strong> ismiyle beni herhangi bir platformda bulabilirsiniz.</li>
+            <li style={{marginBottom:5}}>Mensis iyi şanslar diler~</li>
           </ul>
             <button onClick={() => setShowRulesModal(false)} style={{
               padding: '10px 20px',

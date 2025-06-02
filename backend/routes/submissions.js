@@ -61,4 +61,23 @@ router.get('/leaderboard/:testid', async (req, res) => {
   }
 });
 
+router.get('/:testid', async (req, res) => {
+  const { testid } = req.params;
+
+  try {
+    const result = await db.query(
+      `SELECT submissionid, submittername, submittedat 
+       FROM submissions 
+       WHERE testid = $1 
+       ORDER BY submittedat DESC`,
+      [testid]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Submissions fetch error:', err);
+    res.status(500).json({ error: 'Cevaplayanlar alınamadı' });
+  }
+});
+
+
 module.exports = router;

@@ -7,14 +7,19 @@ router.get('/', async (req, res) => {
   res.json(result.rows);
 });
 
-router.get('/:id', async (req, res) => {
-  const questionId = req.params.id;
+router.get('/:testid', async (req, res) => {
+  const { testid } = req.params;
 
-  const question = await db.query('SELECT * FROM questions WHERE id = $1', [questionId]);
-
-  res.json({
-    question: question.rows[0],
-  });
+  try {
+    const result = await db.query(
+      `SELECT * FROM questions WHERE testid = $1 ORDER BY questionid ASC`,
+      [testid]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Questions fetch error:', err);
+    res.status(500).json({ error: 'Sorular alınamadı' });
+  }
 });
 
 module.exports = router;

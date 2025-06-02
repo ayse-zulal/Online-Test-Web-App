@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useUserStore } from '../stores/UserStore.ts'; 
 import { toast } from 'react-toastify';
 import Loader from '../components/Loader.js';
+import UserTests from '../components/UserTests.js';
 export default function UserPage() {
   const { user, fetchUser } = useUserStore();
   const [testImage, setTestImage] = useState('');
@@ -60,6 +61,11 @@ export default function UserPage() {
       }
       return false;
     });
+
+    if (questions.length == 0) {
+      toast.error('Lütfen testinize soru ekleyin');
+      return;
+    }
 
     if (hasInvalidQuestion) return;
 
@@ -140,7 +146,11 @@ export default function UserPage() {
           <ul style={{ margin: 0 }}>
             <li style={{marginBottom:5}}>İstediğin kadar test oluşturabilirsin</li>
               <li style={{marginBottom:5}}>Her testin sınırsız sayıda sorusu olabilir, <strong>açık uçlu</strong>, <strong>çoktan seçmeli</strong> arasında seçim yapabilir, soruları kafana göre ekleyip çıkartabilirsin</li>
-               </ul>
+              <li style={{marginBottom:5}}><strong>Üye olmak</strong> ve <strong>giriş yapmak</strong> için kullandığın linki saklamayı unutma ve kimseyle paylaşma, burası yazarlara özel!</li>
+              <li style={{marginBottom:5}}>Bu arada günlük olarak yeniden <strong>login</strong> istiyor, güvenlik açısından bir önlem, login olduktan sonra <strong>header</strong> üzerindeki toggle barda testler yerine kullanıcı sayfası gözükecek oradan kullanıcı sayfana ulaşabilirsin, tüm testleri görmek istersen de <strong>logonun</strong> üzerine tıklayıp ana sayfaya gidebilirsin</li>
+              <li style={{marginBottom:5}}>Siteyle ilgili şikayetin, tavsiyen falan olursa <strong>@mensisnigrum</strong> ismiyle beni herhangi bir platformda bulabilirsin zaten tanışıyoruzdur</li>
+              <li style={{marginBottom:5}}>Test güncelleme ve silme fonksiyonlarını eklemedim(üşendim), öyle bir isteğin olursa da beni bul manuel silerim, güncellemeye hiç girmeyelim</li>
+          </ul>
         </div>
       )}
   <h2 style={{ marginBottom: 20, fontSize: 28, textAlign: 'center' }}>Yeni Test Oluştur</h2>
@@ -491,7 +501,9 @@ export default function UserPage() {
             <ul style={{ margin: 0, textAlign:'left'}}>
             <li style={{marginBottom:5}}>İstediğin kadar test oluşturabilirsin</li>
               <li style={{marginBottom:5}}>Her testin sınırsız sayıda sorusu olabilir, <strong>açık uçlu</strong>, <strong>çoktan seçmeli</strong> arasında seçim yapabilir, soruları kafana göre ekleyip çıkartabilirsin</li>
-              </ul>
+              <li style={{marginBottom:5}}><strong>Üye olmak</strong> ve <strong>giriş yapmak</strong> için kullandığın linki saklamayı unutma ve kimseyle paylaşma, burası yazarlara özel!</li>
+              <li style={{marginBottom:15}}>Siteyle ilgili şikayetin, tavsiyen falan olursa <strong>@mensisnigrum</strong> ismiyle beni herhangi bir platformda bulabilirsin zaten tanışıyoruzdur</li>
+          </ul>
             <button onClick={() => setShowRulesModal(false)} style={{
               padding: '10px 20px',
               backgroundColor: '#03022c',
@@ -503,6 +515,7 @@ export default function UserPage() {
           </div>
         </div>
       )}
+      <UserTests userid={user.user.userid} />
 </div>
 
   );

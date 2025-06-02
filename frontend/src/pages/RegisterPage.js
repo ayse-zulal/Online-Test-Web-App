@@ -16,7 +16,7 @@ export default function Register() {
       await axios.post("http://localhost:5000/api/auth/register", form);
       setLoading(false);
       toast.success("Kayıt başarılı!");
-      navigate('/to-login'); 
+      navigate('/user/login'); 
     } catch (err) {
       console.error("Registration failed:", err.response?.data || err.message);
       toast.error("Kayıt başarısız: " + (err.response?.data?.error || err.message));
