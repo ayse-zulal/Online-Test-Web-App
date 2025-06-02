@@ -11,7 +11,7 @@ require('dotenv').config();
 app.use(cookieParser()); 
 
 app.use(cors({
-  origin: "http://localhost:3000", // frontend adresin
+  origin: "https://mensisnigrum.netlify.app", // frontend adresin
   credentials: true
 }));
 app.use(express.json());
