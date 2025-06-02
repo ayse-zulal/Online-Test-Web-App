@@ -2,6 +2,10 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import './TestPage.css'; 
+import Loader from '../components/Loader';
+import ErrorPage from '../components/ErrorPage'
+import { toast } from 'react-toastify';
+
 export default function TestDetail() {
   const { id } = useParams();
   const [test, setTest] = useState(null);
@@ -13,18 +17,31 @@ export default function TestDetail() {
   const [leaderboard, setLeaderboard] = useState([]);
   const [alreadySubmitted, setAlreadySubmitted] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
+  const [visibleCountLeaderboard, setVisibleCountLeaderboard] = useState(10);
   const localKey = `test_taken_${id}`;
 
 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
-      await axios.get(`http://localhost:5000/api/tests/${id}`).then(res => {
+      setLoading(true);
+      setError(false);
+      try {
+        const res = await axios.get(`http://localhost:5000/api/tests/${id}`);
         setTest(res.data.test);
         setQuestions(res.data.questions);
         setAnswers(res.data.questions.map(q => ({ questionId: q.questionid, answerText: '' })));
         setCreator(res.data.creator);
-      });
+      } catch (err) {
+        console.error(err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
     };
+
     fetchData();
   }, [id]);
 
@@ -37,48 +54,62 @@ export default function TestDetail() {
 
   const handleSubmit = async () => {
   try {
+    setLoading(true);
     await axios.post('http://localhost:5000/api/submissions/create', {
       testId: id,
       submittername: participantName,
       answers,
     });
     localStorage.setItem(localKey, 'true');
-    alert('Test başarıyla gönderildi!');
+    setLoading(false);
+    toast.success('Cevaplarınız başarıyla gönderildi!');
     setShowModal(false);
     setAlreadySubmitted(true);
+    await fetchLeaderboard();
   } catch (err) {
     console.error(err);
-    alert('Bir hata oluştu.');
+    toast.error('Bir hata oluştu.');
   }
 };
 
 
   useEffect(() => {
+    const taken = localStorage.getItem(localKey);
+    if (taken) {
+      setAlreadySubmitted(true);
+    }
+    fetchLeaderboard();
+  }, [id, localKey]);
+
   const fetchLeaderboard = async () => {
     const res = await axios.get(`http://localhost:5000/api/submissions/leaderboard/${id}`);
     setLeaderboard(res.data);
   };
-  const taken = localStorage.getItem(localKey);
-  if (taken) {
-    setAlreadySubmitted(true);
-  }
-  fetchLeaderboard();
-}, [id, localKey]);
 
-const handleStartTest = () => {
-  localStorage.setItem(localKey, 'true');
-  setShowModal(true);
-};
-console.log(creator)
+  const handleStartTest = () => {
+    localStorage.setItem(localKey, 'true');
+    setShowModal(true);
+  };
 
-  if (!test) return <div>Yükleniyor...</div>;
+  if (loading) return <Loader />;
+
+  if (error) return (
+    <ErrorPage/>
+  );
 
   return (
     <div className={showModal ? 'blurred' : ''} style={{ padding: 30 }}>
-      <h2>{test.title}</h2>
-      <p><b>Açıklama:</b> {test.description}</p>
-      <p><b>Soru Sayısı:</b> {questions.length}</p>
-      <p><b>Hazırlayan:</b> {creator?.username || 'Bilinmiyor'}</p>
+      <div className="test-detail-container">
+        <div className="test-header">
+          <img src={test.image} alt="Test Görseli" className="test-image" />
+          <div className="test-info">
+            <h2 className="test-title">{test.title}</h2>
+            <p><b>Açıklama:</b> {test.description}</p>
+            <p><b>Soru Sayısı:</b> {questions.length}</p>
+            <p><b>Hazırlayan:</b> {creator?.username || 'Bilinmiyor'}</p>
+          </div>
+        </div>
+      </div>
 
       <div className="leaderboard-container">
         <h3>Liderlik Tablosu</h3>
@@ -92,21 +123,70 @@ console.log(creator)
             </tr>
           </thead>
           <tbody>
-            {leaderboard.slice(0, 10).map((s, i) => (
-              <tr key={s.submissionid}>
-                <td>#{i + 1}</td>
-                <td>{s.submittername}</td>
-                <td>{s.correct_count ?? '—'}</td>
-                <td>{new Date(s.submittedat).toLocaleString()}</td>
-              </tr>
-            ))}
+            {leaderboard.slice(0, visibleCountLeaderboard).map((s, i) => {
+              const rowClass =
+                i === 0 ? 'gold-row' :
+                i === 1 ? 'silver-row' :
+                i === 2 ? 'bronze-row' : '';
+
+              return (
+                <tr key={s.submissionid} className={rowClass}>
+                  <td>#{i + 1}</td>
+                  <td>{s.submittername}</td>
+                  <td>{s.correct_count ?? '—'}</td>
+                  <td>{new Date(s.submittedat).toLocaleDateString('tr-TR', {
+                    day: '2-digit',
+                    month: 'long',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
+        {visibleCountLeaderboard < leaderboard.length && (
+                <div style={{ textAlign: "center", marginTop: "1rem" }}>
+                  <button
+                    onClick={() => setVisibleCountLeaderboard(visibleCountLeaderboard + 10)}
+                    style={{
+                      padding: '0.6rem 1.2rem',
+                      backgroundColor: '#03022c',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Daha Fazlası
+                  </button>
+                </div>
+              )}
       </div>
+
       {alreadySubmitted ? (
-        <p style={{ color: 'red', marginTop: 20 }}>
-          Bu testi zaten tamamladınız. Tekrar katılamazsınız.
-        </p>
+        <div style={{ marginTop: 30 }}>
+          <p style={{ color: 'white', backgroundColor: "#03022c", padding: "10px", borderRadius: 10 }}>
+            Araya kaynak yapmak kötüdür, bunu daha önce zaten çözmüşsün?
+          </p>
+
+          <div className="answer-key">
+            <h3 style={{ marginTop: 20, color: 'white' }}>Cevap Anahtarı</h3>
+            {questions.map((q, index) => (
+              <div key={q.questionid} className="question-card" style={{ marginBottom: 20, backgroundColor: '#03022c', padding: 15, borderRadius: 10 }}>
+                <p style={{ color: 'white' }}>
+                  <b>{index + 1}. {q.questiontext}</b>
+                </p>
+                {q.correctanswer ? (
+                  <p style={{ color: '#a0ffb3', marginTop: 5 }}>✔ Doğru Cevap: {q.correctanswer}</p>
+                ) : (
+                  <p style={{ color: '#ffc0cb', marginTop: 5 }}>✖ Bu soru için tanımlı bir doğru cevap bulunamadı.</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
       ) : (
         <button onClick={handleStartTest} className="start-button">Teste Başla</button>
       )}

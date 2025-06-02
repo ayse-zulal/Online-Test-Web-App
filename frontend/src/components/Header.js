@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useUserStore } from '../stores/UserStore.ts';
 import './Header.css'; 
-export default function ResponsiveHeader({ }) {
+import logo from '../assets/logo.png'
+export default function ResponsiveHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
     const { user, fetchUser } = useUserStore();
     useEffect(() => {
@@ -12,7 +13,7 @@ export default function ResponsiveHeader({ }) {
   return (
     <header className="header">
       <div className="container">
-        <Link to="/" className="logo">TestApp</Link>
+        <Link to="/" ><img src={logo} className="logo"></img></Link>
 
         <button className="menu-toggle" onClick={() => setMenuOpen(prev => !prev)}>
           ☰

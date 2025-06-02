@@ -1,0 +1,48 @@
+.loader-container {
+  height: 100vh;
+  width: 100%;
+  background: linear-gradient(to bottom, #03022c, #918af8);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+}
+
+.loader-logo {
+  font-size: 1rem;
+  animation: pulse 1.2s infinite ease-in-out;
+}
+
+.loading-bar {
+  width: 70%;
+  height: 6px;
+  background-color: #03022c;
+  border-radius: 10px;
+  margin-top: 20px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #03022c, #918af8);
+  animation: loading 1.8s infinite linear;
+}
+
+.loading-text {
+  margin-top: 12px;
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+@keyframes loading {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+}
